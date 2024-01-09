@@ -4,7 +4,7 @@ from celery.schedules import crontab
 from common.config import settings
 
 celery_app = Celery('tasks', broker=settings.RABBITMQ_URL, include=['celery_worker.tasks'])
-celery_app.conf.timezone = 'Asia/Ho_Chi_Minh'
+celery_app.conf.timezone = settings.TIMEZONE
 
 celery_app.conf.beat_schedule = {
     'add-every-12-am': {

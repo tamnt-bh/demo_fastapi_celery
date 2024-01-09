@@ -7,7 +7,6 @@ from pydantic_settings import BaseSettings
 class _Settings(BaseSettings):
     model_config = ConfigDict(env_file=".env")
 
-    # mongodb
     MONGODB_HOST: str
     MONGODB_PORT: int
     MONGODB_DATABASE: str
@@ -25,6 +24,8 @@ class _Settings(BaseSettings):
     SENDGRID_API_KEY: str
     EMAIL_FROM: str
     NAME_EMAIL_FROM: str
+
+    TIMEZONE: str
 
 
 settings = _Settings()

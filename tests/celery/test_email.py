@@ -18,7 +18,7 @@ def test_send_email_register_success_success():
 
 def test_send_email_remind_buying():
     with (patch('celery_worker.tasks.UserModel.objects') as mock_objects,
-          patch('celery_worker.tasks.Email') as mock_email_class,
+          patch('celery_worker.controller.send_email.Email') as mock_email_class,
           patch('celery_worker.tasks.connect') as mock_connect_db,
           patch('celery_worker.tasks.disconnect') as mock_disconnect_db):
         mock_user = Mock(email="test@example.com", fullname="John Doe")
@@ -35,4 +35,4 @@ def test_send_email_remind_buying():
         mock_email_class.assert_called_once_with(to_email=mock_user.email, fullname=mock_user.fullname)
         mock_email_instance.send_reminder_buying.assert_called_once()
 
-        assert result is None
+        assert isinstance(result, list)
