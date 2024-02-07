@@ -5,11 +5,16 @@ from pydantic_settings import BaseSettings
 
 
 class _Settings(BaseSettings):
-    model_config = ConfigDict(env_file=".env")
+    model_config = ConfigDict(env_file=".env", extra="ignore")
 
     MONGODB_HOST: str
     MONGODB_PORT: int
     MONGODB_DATABASE: str
+    MONGODB_EXPOSE_PORT: Optional[str] = None
+    MONGODB_USERNAME: str
+    MONGODB_PASSWORD: str
+
+    API_PORT: Optional[str] = None
 
     PROJECT_NAME: str = "Demo Celery + FastAPI"
 
@@ -19,7 +24,9 @@ class _Settings(BaseSettings):
 
     ENVIRONMENT: str
 
-    RABBITMQ_URL: str = "amqp://guest:guest@localhost:5672"
+    RABBITMQ_USER: str
+    RABBITMQ_PASS: str
+    RABBITMQ_HOST: str
 
     SENDGRID_API_KEY: str
     EMAIL_FROM: str

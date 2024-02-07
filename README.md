@@ -8,8 +8,8 @@ virtualenv .venv --python=python3.9
 ### Install packages
 
 ```
-pip install -r requirements.txt
 source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
 ### Update requirements file:
@@ -42,4 +42,10 @@ sh scripts/flower.sh
 ```
 cp .env-example .test.env
 pytest -x
+```
+
+## Docker
+
+```
+docker compose up -d --build
 ```

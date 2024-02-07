@@ -4,14 +4,21 @@ from common.config import settings
 
 
 def connect() -> None:
-    try:
+    if settings.ENVIRONMENT == "testing":
         return mongo_engine_connect(
             settings.MONGODB_DATABASE,
             host=settings.MONGODB_HOST,
             port=settings.MONGODB_PORT,
         )
-    except Exception as e:
-        print("💥💥 Error connecting to mongodb: {}".format(e))
+    else:
+        return mongo_engine_connect(
+            settings.MONGODB_DATABASE,
+            host=settings.MONGODB_HOST,
+            port=settings.MONGODB_PORT,
+            username=settings.MONGODB_USERNAME,
+            password=settings.MONGODB_PASSWORD,
+            alias="default",
+        )
 
 
 def disconnect() -> None:

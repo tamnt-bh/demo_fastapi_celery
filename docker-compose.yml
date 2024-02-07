@@ -1,0 +1,82 @@
+version: "3"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    depends_on:
+      - mongodb
+      - rabbit
+    restart: unless-stopped
+    env_file:
+      - .env
+    container_name: base
+    ports:
+      - 8000:8000
+    networks:
+      - localnet
+
+
+  mongodb:
+    image: mongo:7.0.2-jammy
+    restart: always
+    command: mongod
+    volumes:
+      - mongodb_data:/data/db
+    env_file:
+      - .env
+    container_name: base_mongodb
+    environment:
+      MONGO_INITDB_ROOT_DATABASE: ${MONGODB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    ports:
+      - ${MONGODB_EXPOSE_PORT}:27017
+    networks:
+      - localnet
+
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: base_rabbitmq
+    hostname: rabbit
+    env_file:
+      - .env
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - localnet
+
+  worker:
+    container_name: base_celery_worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    env_file:
+      - .env
+    command: >
+      sh -c "celery -A celery_worker.worker worker -B --loglevel=info"
+    depends_on:
+      - api
+      - rabbit
+      - mongodb
+    networks:
+      - localnet
+
+networks:
+  localnet:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+  rabbit_data:
+    driver: local
